@@ -3,17 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>APF — AI Jobs Intelligence Dashboard</title>
+<title>APF — AI Jobs Intelligence v2</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f4f0; color: #1a1a18; min-height: 100vh; padding: 2rem 1rem; }
-  .container { max-width: 860px; margin: 0 auto; }
-  h1 { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+  .container { max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 22px; font-weight: 600; margin-bottom: 2px; }
   .subtitle { font-size: 13px; color: #888; margin-bottom: 1.5rem; }
 
-  .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.5rem; }
-  .tab { padding: 7px 16px; border-radius: 20px; border: 1px solid #d3d1c7; background: #fff; cursor: pointer; font-size: 12px; color: #5f5e5a; transition: all 0.15s; }
-  .tab.active { background: #1a1a18; color: #fff; border-color: transparent; }
+  /* Top nav tabs */
+  .nav-tabs { display: flex; gap: 6px; border-bottom: 1px solid #ddd; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .nav-tab { padding: 8px 16px; font-size: 13px; color: #888; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
+  .nav-tab.active { color: #1a1a18; font-weight: 500; border-bottom-color: #1a1a18; }
+
+  /* Role tabs */
+  .role-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .role-tab { padding: 6px 15px; border-radius: 20px; border: 1px solid #d3d1c7; background: #fff; cursor: pointer; font-size: 12px; color: #5f5e5a; transition: all 0.15s; white-space: nowrap; }
+  .role-tab.active { background: #1a1a18; color: #fff; border-color: transparent; }
 
   .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 1.25rem; }
   .metric { background: #fff; border: 1px solid #e0dfd8; border-radius: 10px; padding: 12px 16px; }
@@ -21,7 +27,7 @@
   .metric-val { font-size: 14px; font-weight: 600; line-height: 1.3; }
 
   .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 1.25rem; }
-  @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
+  @media (max-width: 620px) { .grid-2 { grid-template-columns: 1fr; } }
 
   .card { background: #fff; border: 1px solid #e0dfd8; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; }
   .section-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
@@ -34,8 +40,10 @@
 
   .tag { display: inline-block; font-size: 11px; padding: 3px 9px; border-radius: 10px; background: #f1efe8; border: 1px solid #d3d1c7; color: #5f5e5a; margin: 3px 2px; }
   .tag.hot { background: #faece7; color: #993c1d; border-color: #f0997b; }
+  .tag.blue { background: #e6f1fb; color: #185fa5; border-color: #85b7eb; }
+  .tag.green { background: #eaf3de; color: #3b6d11; border-color: #97c459; }
 
-  .gap-item { padding: 9px 0; border-bottom: 1px solid #f0ede6; font-size: 13px; line-height: 1.6; }
+  .gap-item { padding: 9px 0; border-bottom: 1px solid #f0ede6; font-size: 13px; line-height: 1.6; color: #333; }
   .gap-item:last-child { border-bottom: none; }
   .gap-num { font-size: 11px; color: #888; font-weight: 600; margin-right: 4px; }
 
@@ -43,40 +51,330 @@
   .insight-label { font-size: 11px; color: #888; margin-bottom: 3px; }
   .insight-text { font-size: 13px; font-weight: 500; }
 
-  .upwork-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 8px; }
-  .upwork-stat { }
-  .upwork-label { font-size: 12px; color: #888; margin-bottom: 2px; }
-  .upwork-val { font-size: 22px; font-weight: 700; color: #0f6e56; }
+  /* Platform section */
+  .platform-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 1.25rem; }
+  .platform-card { background: #fff; border: 1px solid #e0dfd8; border-radius: 10px; padding: 14px 16px; }
+  .platform-name { font-size: 13px; font-weight: 600; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+  .platform-badge { font-size: 10px; padding: 2px 7px; border-radius: 8px; font-weight: 500; }
+  .badge-elite { background: #faeeda; color: #854f0b; }
+  .badge-mass { background: #e6f1fb; color: #185fa5; }
+  .badge-entry { background: #eaf3de; color: #3b6d11; }
+  .badge-gig { background: #fbeaf0; color: #993556; }
+  .platform-stat { font-size: 12px; color: #888; margin-top: 4px; line-height: 1.5; }
+  .platform-rate { font-size: 15px; font-weight: 600; color: #1a1a18; margin: 6px 0 4px; }
+
+  /* DataAnnotation section */
+  .da-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 12px; }
+  .da-role { background: #f5f4f0; border-radius: 8px; padding: 10px 12px; }
+  .da-title { font-size: 12px; font-weight: 600; margin-bottom: 2px; }
+  .da-pay { font-size: 14px; font-weight: 700; color: #0f6e56; }
+  .da-desc { font-size: 11px; color: #888; margin-top: 2px; }
+
+  /* Stats bar at bottom */
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 8px; }
+  .stat-item { }
+  .stat-label { font-size: 12px; color: #888; margin-bottom: 2px; }
+  .stat-val { font-size: 22px; font-weight: 700; color: #0f6e56; }
 
   .source-note { font-size: 11px; color: #aaa; margin-top: 8px; }
-  .platform-pill { font-size: 11px; padding: 2px 8px; border-radius: 8px; border: 1px solid #d3d1c7; color: #888; margin-right: 4px; }
+  .hidden { display: none; }
+  .section { }
 </style>
 </head>
 <body>
 <div class="container">
-  <h1>APF — AI Jobs Intelligence</h1>
-  <p class="subtitle">Real market data from LinkedIn, Indeed, Upwork, Toptal &amp; Ziprecruiter · May 2026</p>
+  <h1>APF — AI Jobs Intelligence Dashboard</h1>
+  <p class="subtitle">Real market data from Indeed, Toptal, Upwork, Fiverr, DataAnnotation.tech & more · Updated May 2026</p>
 
-  <div class="tabs">
-    <button class="tab active" onclick="showRole(0,this)">AI Agent Engineer</button>
-    <button class="tab" onclick="showRole(1,this)">AI Engineer</button>
-    <button class="tab" onclick="showRole(2,this)">AI Automation Engineer</button>
-    <button class="tab" onclick="showRole(3,this)">AI Platform Engineer</button>
-    <button class="tab" onclick="showRole(4,this)">AI Developer</button>
+  <div class="nav-tabs">
+    <div class="nav-tab active" onclick="showSection('roles', this)">Roles & Skills</div>
+    <div class="nav-tab" onclick="showSection('platforms', this)">Platform Breakdown</div>
+    <div class="nav-tab" onclick="showSection('dataannotation', this)">DataAnnotation.tech</div>
+    <div class="nav-tab" onclick="showSection('marketstats', this)">Market Stats</div>
   </div>
 
-  <div id="roleContent"></div>
-
-  <div class="card">
-    <p class="section-label">Upwork demand growth 2025 — based on actual completed job earnings</p>
-    <div class="upwork-grid">
-      <div class="upwork-stat"><p class="upwork-label">AI skills overall</p><p class="upwork-val">+109%</p></div>
-      <div class="upwork-stat"><p class="upwork-label">AI integration</p><p class="upwork-val">+178%</p></div>
-      <div class="upwork-stat"><p class="upwork-label">AI video/editing</p><p class="upwork-val">+329%</p></div>
-      <div class="upwork-stat"><p class="upwork-label">AI chatbot dev</p><p class="upwork-val">+71%</p></div>
+  <!-- SECTION: ROLES -->
+  <div id="section-roles" class="section">
+    <div class="role-tabs">
+      <button class="role-tab active" onclick="showRole(0,this)">AI Agent Engineer</button>
+      <button class="role-tab" onclick="showRole(1,this)">AI Engineer</button>
+      <button class="role-tab" onclick="showRole(2,this)">AI Automation Engineer</button>
+      <button class="role-tab" onclick="showRole(3,this)">AI Platform Engineer</button>
+      <button class="role-tab" onclick="showRole(4,this)">AI Developer</button>
     </div>
-    <p class="source-note">Source: Upwork 2026 In-Demand Skills Report · YoY comparison Jan–Dec 2025 vs 2024 · US demand, completed jobs only</p>
+    <div id="roleContent"></div>
   </div>
+
+  <!-- SECTION: PLATFORMS -->
+  <div id="section-platforms" class="section hidden">
+    <div class="platform-grid">
+      <div class="platform-card">
+        <div class="platform-name">🏆 Toptal <span class="platform-badge badge-elite">Elite / Top 3%</span></div>
+        <div class="platform-rate">$80–$250+/hr</div>
+        <div class="platform-stat">Rigorous multi-week vetting (2–5 weeks). Only ~3% acceptance rate. Clients are Fortune 500 and funded startups. No cold-pitching — matched to projects automatically. Charges clients a hidden 30–100% margin on top of your rate.</div>
+        <div style="margin-top:10px;">
+          <p class="section-label">Top AI roles placed</p>
+          <span class="tag">ML Engineer</span><span class="tag">NLP Developer</span><span class="tag">AI Architect</span><span class="tag">Data Scientist</span>
+        </div>
+        <div style="margin-top:10px;">
+          <p class="section-label">Key skills screened for</p>
+          <span class="tag blue">Python</span><span class="tag blue">Deep Learning</span><span class="tag blue">NLP</span><span class="tag blue">Statistical Modeling</span><span class="tag blue">System Architecture</span>
+        </div>
+        <div class="insight-box" style="margin-top:10px;">
+          <p class="insight-label">APF Strategy</p>
+          <p class="insight-text">Toptal is not realistic for fresh grads. Target after 2–3 years of production experience and a strong portfolio of shipped AI systems.</p>
+        </div>
+      </div>
+
+      <div class="platform-card">
+        <div class="platform-name">⚡ Upwork <span class="platform-badge badge-mass">Mass Market</span></div>
+        <div class="platform-rate">$35–$120/hr (AI roles)</div>
+        <div class="platform-stat">Largest AI freelance marketplace. AI skills grew 109% YoY. Best entry point for fresh APF graduates. Fees: 20% on first $500/client, then 10%, then 5%.</div>
+        <div style="margin-top:10px;">
+          <p class="section-label">Fastest-growing AI skills (2025 YoY)</p>
+          <span class="tag hot">AI Integration +178%</span><span class="tag hot">AI Video +329%</span><span class="tag hot">AI Annotation +154%</span><span class="tag hot">AI Chatbot Dev +71%</span>
+        </div>
+        <div style="margin-top:10px;">
+          <p class="section-label">Winning niches for APF grads</p>
+          <span class="tag green">n8n automation</span><span class="tag green">Chatbot dev</span><span class="tag green">RAG apps</span><span class="tag green">GHL AI</span><span class="tag green">OpenAI integrations</span>
+        </div>
+        <div class="insight-box" style="margin-top:10px;">
+          <p class="insight-label">APF Strategy</p>
+          <p class="insight-text">Start here. Build 5-star reviews on small $200–$500 jobs, then scale rates. Specialize in one niche (e.g. AI for real estate, AI for law firms) to stand out.</p>
+        </div>
+      </div>
+
+      <div class="platform-card">
+        <div class="platform-name">🎯 Indeed <span class="platform-badge badge-mass">Full-time / Contract</span></div>
+        <div class="platform-rate">$42–$70/hr · $120k–$206k/yr</div>
+        <div class="platform-stat">Primary platform for full-time and contract AI roles. AI/ML job postings are 134% above pre-pandemic levels. 15% of marketing postings now mention AI. Updates every 10–20 minutes.</div>
+        <div style="margin-top:10px;">
+          <p class="section-label">Most frequent requirements in postings</p>
+          <span class="tag blue">Python</span><span class="tag blue">API development</span><span class="tag blue">Cloud (AWS/Azure)</span><span class="tag blue">MLOps</span><span class="tag blue">SQL</span><span class="tag blue">Deep learning frameworks</span>
+        </div>
+        <div style="margin-top:10px;">
+          <p class="section-label">Key data from Indeed postings</p>
+          <span class="tag">SQL in 17% of AI postings</span><span class="tag">Azure in 33% of postings</span><span class="tag">AWS leads cloud requirements</span>
+        </div>
+        <div class="insight-box" style="margin-top:10px;">
+          <p class="insight-label">APF Strategy</p>
+          <p class="insight-text">Target contract / remote roles first. Indeed is where Nigerian remote workers land US-paying contracts. Use "AI engineer remote" + filter by date posted (last 24hrs).</p>
+        </div>
+      </div>
+
+      <div class="platform-card">
+        <div class="platform-name">🛒 Fiverr <span class="platform-badge badge-gig">Gig / Productized</span></div>
+        <div class="platform-rate">$25–$200/hr (AI gigs)</div>
+        <div class="platform-stat">Best for productized, packaged services. Flat 20% commission. Lower ceiling than Upwork for tech but faster to first order. Better for non-engineering AI services.</div>
+        <div style="margin-top:10px;">
+          <p class="section-label">Top-selling AI gigs 2025–26</p>
+          <span class="tag hot">AI prompt writing</span><span class="tag hot">AI automation workflows</span><span class="tag hot">Chatbot setup</span><span class="tag hot">AI content creation</span><span class="tag hot">Short-form video editing</span>
+        </div>
+        <div style="margin-top:10px;">
+          <p class="section-label">Realistic Fiverr earnings (AI)</p>
+          <span class="tag green">Beginners: $1,200–$3,000/mo</span><span class="tag green">Specialists: $5,000–$10,000/mo</span>
+        </div>
+        <div class="insight-box" style="margin-top:10px;">
+          <p class="insight-label">APF Strategy</p>
+          <p class="insight-text">Key shift: simply knowing ChatGPT prompts was worth money in 2023. Now clients want production systems that save money or generate revenue. Position as a builder, not a prompter. Earnings gap between $25/hr and $200/hr is portfolio proof, not prompt quality.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="section-label">Platform comparison — which to target first</p>
+      <div style="overflow-x:auto;">
+        <table style="width:100%; border-collapse:collapse; font-size:13px;">
+          <thead>
+            <tr style="border-bottom:1px solid #e0dfd8;">
+              <th style="text-align:left;padding:8px 10px;font-weight:500;color:#888;font-size:11px;">Platform</th>
+              <th style="text-align:left;padding:8px 10px;font-weight:500;color:#888;font-size:11px;">Best for</th>
+              <th style="text-align:left;padding:8px 10px;font-weight:500;color:#888;font-size:11px;">Entry barrier</th>
+              <th style="text-align:left;padding:8px 10px;font-weight:500;color:#888;font-size:11px;">Rate ceiling</th>
+              <th style="text-align:left;padding:8px 10px;font-weight:500;color:#888;font-size:11px;">Fee</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #f0ede6;">
+              <td style="padding:9px 10px;font-weight:500;">DataAnnotation.tech</td>
+              <td style="padding:9px 10px;color:#555;">Beginners, first AI income</td>
+              <td style="padding:9px 10px;"><span class="tag green">Very low</span></td>
+              <td style="padding:9px 10px;">$20–60/hr</td>
+              <td style="padding:9px 10px;">Platform keeps margin</td>
+            </tr>
+            <tr style="border-bottom:1px solid #f0ede6;">
+              <td style="padding:9px 10px;font-weight:500;">Fiverr</td>
+              <td style="padding:9px 10px;color:#555;">Packaged/productized gigs</td>
+              <td style="padding:9px 10px;"><span class="tag green">Low</span></td>
+              <td style="padding:9px 10px;">$200+/hr (specialist)</td>
+              <td style="padding:9px 10px;">20% flat</td>
+            </tr>
+            <tr style="border-bottom:1px solid #f0ede6;">
+              <td style="padding:9px 10px;font-weight:500;">Upwork</td>
+              <td style="padding:9px 10px;color:#555;">Technical AI freelance work</td>
+              <td style="padding:9px 10px;"><span class="tag">Medium</span></td>
+              <td style="padding:9px 10px;">$120+/hr</td>
+              <td style="padding:9px 10px;">5–20% sliding</td>
+            </tr>
+            <tr style="border-bottom:1px solid #f0ede6;">
+              <td style="padding:9px 10px;font-weight:500;">Indeed</td>
+              <td style="padding:9px 10px;color:#555;">Full-time & contract roles</td>
+              <td style="padding:9px 10px;"><span class="tag">Medium–High</span></td>
+              <td style="padding:9px 10px;">$206k/yr avg</td>
+              <td style="padding:9px 10px;">Free</td>
+            </tr>
+            <tr>
+              <td style="padding:9px 10px;font-weight:500;">Toptal</td>
+              <td style="padding:9px 10px;color:#555;">Senior specialists only</td>
+              <td style="padding:9px 10px;"><span class="tag hot">Very High</span></td>
+              <td style="padding:9px 10px;">$250+/hr</td>
+              <td style="padding:9px 10px;">Hidden client margin</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION: DATA ANNOTATION -->
+  <div id="section-dataannotation" class="section hidden">
+    <div class="card">
+      <p class="section-label">What is DataAnnotation.tech?</p>
+      <p style="font-size:13px;line-height:1.7;color:#333;">DataAnnotation.tech is a platform where 100k+ experts earn $20–$60+/hr training AI models remotely. It's one of the best entry-level AI income paths — no degree required, just strong reasoning, writing, or coding skills. It serves as a launchpad: annotators build domain expertise and portfolio evidence that opens doors to higher-paying AI engineering roles.</p>
+    </div>
+
+    <div class="card">
+      <p class="section-label">6 role types inside "data annotation" — and what they pay</p>
+      <div class="da-grid">
+        <div class="da-role">
+          <div class="da-title">Basic Labeler</div>
+          <div class="da-pay">$15–20/hr</div>
+          <div class="da-desc">Image tagging, text categorization, conversation rating</div>
+        </div>
+        <div class="da-role">
+          <div class="da-title">RLHF Reviewer</div>
+          <div class="da-pay">$18–35/hr</div>
+          <div class="da-desc">Ranks AI responses for helpfulness, harmlessness, honesty</div>
+        </div>
+        <div class="da-role">
+          <div class="da-title">QA Lead / Reviewer</div>
+          <div class="da-pay">$28–40/hr</div>
+          <div class="da-desc">Reviews other annotators' work, ensures quality standards</div>
+        </div>
+        <div class="da-role">
+          <div class="da-title">Coding Annotator</div>
+          <div class="da-pay">$35–50/hr</div>
+          <div class="da-desc">Reviews/writes code for AI training; requires Python/JS skills</div>
+        </div>
+        <div class="da-role">
+          <div class="da-title">Domain Expert</div>
+          <div class="da-pay">$40–100/hr</div>
+          <div class="da-desc">Medical, legal, financial annotation; PhD or professional background</div>
+        </div>
+        <div class="da-role">
+          <div class="da-title">Red Teamer</div>
+          <div class="da-pay">$25–60/hr</div>
+          <div class="da-desc">Tests AI models for safety failures, adversarial inputs, edge cases</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card" style="margin-bottom:0;">
+        <p class="section-label">Skills needed to qualify</p>
+        <div class="skill-row"><div class="skill-top"><span>Strong written English</span><span class="skill-pct">100%</span></div><div class="bar-bg"><div class="bar-fill" style="width:100%;background:#D85A30;"></div></div></div>
+        <div class="skill-row"><div class="skill-top"><span>Critical reasoning & logic</span><span class="skill-pct">95%</span></div><div class="bar-bg"><div class="bar-fill" style="width:95%;background:#D85A30;"></div></div></div>
+        <div class="skill-row"><div class="skill-top"><span>Attention to detail</span><span class="skill-pct">95%</span></div><div class="bar-bg"><div class="bar-fill" style="width:95%;background:#D85A30;"></div></div></div>
+        <div class="skill-row"><div class="skill-top"><span>Python (for coding roles)</span><span class="skill-pct">75%</span></div><div class="bar-bg"><div class="bar-fill" style="width:75%;background:#D85A30;"></div></div></div>
+        <div class="skill-row"><div class="skill-top"><span>Understanding of ML concepts</span><span class="skill-pct">60%</span></div><div class="bar-bg"><div class="bar-fill" style="width:60%;background:#D85A30;"></div></div></div>
+        <div class="skill-row"><div class="skill-top"><span>Domain expertise (law/med/fin)</span><span class="skill-pct">50%</span></div><div class="bar-bg"><div class="bar-fill" style="width:50%;background:#D85A30;"></div></div></div>
+      </div>
+      <div class="card" style="margin-bottom:0;">
+        <p class="section-label">Market signal</p>
+        <div style="margin-bottom:14px;">
+          <div class="stat-label">Annotation demand growth YoY</div>
+          <div class="stat-val" style="font-size:28px;">+154%</div>
+          <div style="font-size:11px;color:#aaa;">Upwork 2026 In-Demand Skills — #1 fastest-growing data science skill</div>
+        </div>
+        <div style="margin-bottom:14px;">
+          <div class="stat-label">Market size 2025</div>
+          <div class="stat-val" style="font-size:28px;">$1.69B</div>
+          <div style="font-size:11px;color:#aaa;">Fortune Business Insights — projected $5.33B by 2030</div>
+        </div>
+        <div>
+          <div class="stat-label">Avg hourly pay (US, ZipRecruiter)</div>
+          <div class="stat-val" style="font-size:28px;">$24.74</div>
+          <div style="font-size:11px;color:#aaa;">Range: $18.75–$26.44/hr depending on domain</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <p class="section-label">How DataAnnotation.tech works for APF graduates</p>
+      <div class="gap-item"><span class="gap-num">Step 1</span>Apply on dataannotation.tech — pass skills assessment (writing + reasoning test). No degree required.</div>
+      <div class="gap-item"><span class="gap-num">Step 2</span>Start with general tasks ($15–20/hr) — writing evaluation, conversation rating, content review.</div>
+      <div class="gap-item"><span class="gap-num">Step 3</span>Unlock coding category ($35–50/hr) — requires passing a separate programming assessment. Python skills from APF are directly applicable here.</div>
+      <div class="gap-item"><span class="gap-num">Step 4</span>Use it as a bridge: build documented experience, unlock QA/RLHF roles, then transition to full engineering gigs on Upwork/Indeed.</div>
+      <div class="insight-box">
+        <p class="insight-label">Key insight for APF curriculum design</p>
+        <p class="insight-text">DataAnnotation.tech is an immediate income source for APF graduates from Day 1 — even before they land their first engineering contract. Teaching students about RLHF, model evaluation, and prompt quality also makes them better AI engineers AND better-paid annotators.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION: MARKET STATS -->
+  <div id="section-marketstats" class="section hidden">
+    <div class="card">
+      <p class="section-label">Headline numbers — 2025–2026 AI job market</p>
+      <div class="stats-row">
+        <div class="stat-item"><p class="stat-label">Avg AI engineer salary (US)</p><p class="stat-val">$206k</p><p style="font-size:11px;color:#aaa;">+$50k YoY jump</p></div>
+        <div class="stat-item"><p class="stat-label">AI job postings growth (H1 2025)</p><p class="stat-val">+89%</p><p style="font-size:11px;color:#aaa;">YoY — KORE1 data</p></div>
+        <div class="stat-item"><p class="stat-label">LinkedIn: AI Engineer rank</p><p class="stat-val">#1</p><p style="font-size:11px;color:#aaa;">Fastest-growing US job title 2025</p></div>
+        <div class="stat-item"><p class="stat-label">Prompt engineering demand</p><p class="stat-val">+136%</p><p style="font-size:11px;color:#aaa;">YoY growth in 2025</p></div>
+      </div>
+      <div class="stats-row" style="margin-top:12px;">
+        <div class="stat-item"><p class="stat-label">IT jobs requiring AI skills</p><p class="stat-val">78%</p><p style="font-size:11px;color:#aaa;">of all IT postings (2025)</p></div>
+        <div class="stat-item"><p class="stat-label">Indeed: AI postings vs pre-pandemic</p><p class="stat-val">+134%</p><p style="font-size:11px;color:#aaa;">Above pre-pandemic baseline</p></div>
+        <div class="stat-item"><p class="stat-label">Upwork AI skills demand YoY</p><p class="stat-val">+109%</p><p style="font-size:11px;color:#aaa;">Based on completed job earnings</p></div>
+        <div class="stat-item"><p class="stat-label">AI skills salary premium</p><p class="stat-val">56%</p><p style="font-size:11px;color:#aaa;">Over non-AI peers (PwC 2025)</p></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="section-label">Salary by specialization (US market)</p>
+      <div class="skill-row"><div class="skill-top"><span>LLM Fine-tuning Specialist</span><span class="skill-pct">$195k–$350k</span></div><div class="bar-bg"><div class="bar-fill" style="width:95%;background:#D85A30;"></div></div></div>
+      <div class="skill-row"><div class="skill-top"><span>AI Agent Engineer (Senior)</span><span class="skill-pct">$200k–$400k+</span></div><div class="bar-bg"><div class="bar-fill" style="width:93%;background:#D85A30;"></div></div></div>
+      <div class="skill-row"><div class="skill-top"><span>Deep Learning Engineer</span><span class="skill-pct">$180k–$280k</span></div><div class="bar-bg"><div class="bar-fill" style="width:88%;background:#378ADD;"></div></div></div>
+      <div class="skill-row"><div class="skill-top"><span>MLOps / LLMOps Engineer</span><span class="skill-pct">$150k–$250k</span></div><div class="bar-bg"><div class="bar-fill" style="width:82%;background:#378ADD;"></div></div></div>
+      <div class="skill-row"><div class="skill-top"><span>AI Platform Engineer</span><span class="skill-pct">$120k–$220k</span></div><div class="bar-bg"><div class="bar-fill" style="width:74%;background:#378ADD;"></div></div></div>
+      <div class="skill-row"><div class="skill-top"><span>AI Automation Engineer (Freelance)</span><span class="skill-pct">$60k–$180k equiv.</span></div><div class="bar-bg"><div class="bar-fill" style="width:62%;background:#1D9E75;"></div></div></div>
+      <div class="skill-row"><div class="skill-top"><span>Prompt Engineer</span><span class="skill-pct">$80k–$150k</span></div><div class="bar-bg"><div class="bar-fill" style="width:50%;background:#1D9E75;"></div></div></div>
+      <div class="skill-row"><div class="skill-top"><span>DataAnnotation.tech (coding tier)</span><span class="skill-pct">$35–$50/hr</span></div><div class="bar-bg"><div class="bar-fill" style="width:28%;background:#888780;"></div></div></div>
+    </div>
+
+    <div class="card">
+      <p class="section-label">Emerging roles barely on the radar yet (watch list for APF)</p>
+      <div style="margin-bottom:8px;">
+        <span class="tag hot">AgentOps Engineer</span>
+        <span class="tag hot">AI Red Teamer</span>
+        <span class="tag hot">Context Engineer</span>
+        <span class="tag hot">AI Security Specialist</span>
+        <span class="tag hot">Multi-modal AI Engineer</span>
+        <span class="tag hot">Synthetic Data Designer</span>
+        <span class="tag hot">Edge AI Engineer</span>
+        <span class="tag hot">AI Ethics Auditor</span>
+      </div>
+      <p style="font-size:12px;color:#888;margin-top:8px;">These roles barely existed 2 years ago. Domain + AI combination roles (healthcare AI, finance AI) command 30–50% premium over pure generalist AI engineers. The highest-paid AI professionals in 2026 are not the most technically skilled — they are the deepest intersection of AI skill + domain expertise.</p>
+    </div>
+
+    <div class="card">
+      <p class="section-label">Sources</p>
+      <p style="font-size:11px;color:#aaa;line-height:1.8;">
+        Upwork 2026 In-Demand Skills Report (completed job earnings Jan–Dec 2025) · LinkedIn Jobs on the Rise 2025–2026 · Indeed Hiring Lab 2026 · 365 Data Science AI Engineer Job Outlook 2026 · Second Talent AI Engineering Skills Report 2026 · HeroHunt.ai Fastest Growing AI Roles 2026 · KORE1 AI Hiring Guide 2026 · Toptal AI Developer listings (May 2026) · DataAnnotation.tech platform data · ZipRecruiter salary data (May 2026) · Coursiv AI Training Jobs 2026 · Fortune Business Insights annotation market data
+      </p>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -85,8 +383,7 @@ const roles = [
     title: "AI Agent Engineer",
     salary: "$113k–$223k/yr · $80–$250/hr freelance",
     experience: "3–6+ years",
-    demand: "🔥 Hottest 2025–26 role",
-    platforms: ["LinkedIn","Indeed","Upwork"],
+    demand: "🔥 Hottest role 2025–26",
     mustHave: [
       { skill: "Python (production-grade)", pct: 95 },
       { skill: "LLM APIs (OpenAI, Claude, Gemini)", pct: 92 },
@@ -96,17 +393,17 @@ const roles = [
       { skill: "Agent evaluation & testing", pct: 75 },
     ],
     niceHave: [
-      { skill: "Reinforcement learning / planning algorithms", pct: 45 },
-      { skill: "Kubernetes / Docker for agent deployment", pct: 50 },
       { skill: "AgentOps / LLMOps observability", pct: 55 },
+      { skill: "Kubernetes / Docker for deployment", pct: 50 },
+      { skill: "Reinforcement learning / planning", pct: 45 },
       { skill: "TypeScript / Node.js", pct: 40 },
     ],
     tools: ["LangChain","LlamaIndex","OpenAI API","Claude API","Pinecone","Weaviate","FastAPI","Docker","AWS/GCP","GitHub Actions"],
     hotTags: ["Multi-agent systems","Context engineering","Tool design"],
     gaps: [
-      "Production hardening — employers want error handling, cost control, and observability at scale; programs teach demos.",
-      "Agent evaluation frameworks — rigorous testing of agent behavior is scarce and commands premium rates.",
-      "Context window management & multi-agent coordination — advanced skills rarely covered in short programs."
+      "Production hardening — error handling, cost control, and observability at scale; most programs teach demos only.",
+      "Agent evaluation frameworks — rigorous testing of agent behavior is scarce; commands premium rates on all platforms.",
+      "Context window management & multi-agent coordination — advanced skills with almost no formal training available."
     ],
     insight: "API calls are ~5% of agent dev effort. The 95% — OAuth, tool design, error cascading, cost management — is what programs skip."
   },
@@ -114,66 +411,63 @@ const roles = [
     title: "AI Engineer",
     salary: "$161k–$206k/yr avg · $42–$70/hr contract",
     experience: "2–5 years",
-    demand: "📈 +16% job postings YoY, fastest-growing tech category",
-    platforms: ["LinkedIn","Indeed","Toptal"],
+    demand: "📈 +89% job postings YoY · LinkedIn #1 fastest-growing title",
     mustHave: [
-      { skill: "Python (ML & API work)", pct: 98 },
+      { skill: "Python (clean, production software)", pct: 98 },
       { skill: "LLM integration & prompt engineering", pct: 85 },
-      { skill: "Cloud platforms (AWS/GCP/Azure)", pct: 80 },
-      { skill: "Data pipelines & ETL", pct: 70 },
+      { skill: "Cloud platforms (AWS/Azure/GCP)", pct: 80 },
       { skill: "REST API development", pct: 78 },
-      { skill: "Deep learning fundamentals", pct: 75 },
+      { skill: "Deep learning frameworks (PyTorch/TF)", pct: 75 },
+      { skill: "Data pipelines, ETL, SQL", pct: 70 },
     ],
     niceHave: [
       { skill: "Vector databases (Pinecone, Weaviate)", pct: 55 },
       { skill: "LLM fine-tuning (LoRA)", pct: 45 },
-      { skill: "AI security & adversarial robustness", pct: 35 },
-      { skill: "Apache Spark / Kafka", pct: 40 },
+      { skill: "AI security & adversarial robustness", pct: 38 },
+      { skill: "Apache Spark / Kafka", pct: 35 },
     ],
-    tools: ["TensorFlow","PyTorch","OpenAI API","AWS SageMaker","Databricks","Apache Spark","Airflow","Snowflake","Docker","Kubernetes"],
+    tools: ["PyTorch","TensorFlow","OpenAI API","AWS SageMaker","Azure ML","Databricks","Airflow","Snowflake","Docker","Kubernetes"],
     hotTags: ["Production deployment","LLM fine-tuning","AI security"],
     gaps: [
-      "78% of IT job postings require AI skills — programs need applied integration, not just model theory.",
+      "78% of IT postings require AI skills — programs need applied integration skills, not just model theory.",
       "AI security (prompt injection, adversarial attacks, data privacy) is an acute talent shortage not in most curricula.",
-      "Production deployment (monitoring, cost management, model drift) valued over notebook-based ML."
+      "Production deployment (monitoring, cost management, model drift) is more valued than notebook-based ML."
     ],
-    insight: "Employers want engineers who can ship AI systems that work reliably at scale — not just run Jupyter notebooks."
+    insight: "Employers want engineers who ship AI systems that work reliably at scale — not just run Jupyter notebooks."
   },
   {
     title: "AI Automation Engineer",
-    salary: "$35–$60/hr Upwork · $60–$180/hr senior specialist",
+    salary: "$35–$60/hr Upwork · $60–$180/hr specialist",
     experience: "1–4 years",
     demand: "🚀 AI integration +178% on Upwork YoY",
-    platforms: ["Upwork","LinkedIn","Freelance platforms"],
     mustHave: [
-      { skill: "n8n / Make / Zapier workflow automation", pct: 90 },
+      { skill: "n8n / Make / Zapier automation", pct: 90 },
       { skill: "LLM API integration (OpenAI, Claude)", pct: 88 },
       { skill: "REST API & webhook design", pct: 85 },
-      { skill: "CRM automation (GHL, HubSpot)", pct: 72 },
       { skill: "Python for scripting & glue code", pct: 75 },
+      { skill: "CRM automation (GHL, HubSpot)", pct: 72 },
       { skill: "AI chatbot / voice agent development", pct: 70 },
     ],
     niceHave: [
+      { skill: "Business process analysis & ROI framing", pct: 60 },
       { skill: "RAG pipeline building", pct: 55 },
-      { skill: "Business process analysis", pct: 60 },
       { skill: "VAPI / Twilio voice integration", pct: 40 },
       { skill: "Data annotation & labeling", pct: 35 },
     ],
     tools: ["n8n","Make (Integromat)","Zapier","GoHighLevel","OpenAI API","Claude API","Airtable","Google Apps Script","WhatsApp Business API","VAPI"],
-    hotTags: ["No-code/low-code AI","Workflow automation","CRM AI integration"],
+    hotTags: ["Workflow automation","CRM AI integration","No-code/low-code AI"],
     gaps: [
-      "Business ROI framing — clients hire automation engineers to reduce costs; programs rarely teach how to scope and quantify automation opportunities.",
-      "Production reliability and error recovery in multi-step workflows is the key differentiator between junior and senior earners.",
-      "Niche stacks like VAPI for voice agents and WhatsApp API for AI customer service are high-demand and underserved in training."
+      "Business ROI framing — clients hire to reduce costs; programs rarely teach how to scope and quantify automation value.",
+      "Production reliability & error recovery in multi-step workflows is the biggest gap between junior and senior earners.",
+      "Niche stacks: VAPI for voice agents, WhatsApp API for AI customer service — high demand, underserved by training."
     ],
-    insight: "Most accessible entry point — Upwork demand is exploding and the barrier to entry is lower than full ML engineering roles."
+    insight: "Most accessible APF entry point — Upwork demand is exploding and the stack (n8n, GHL, OpenAI) is teachable in 3 months."
   },
   {
     title: "AI Platform Engineer",
     salary: "$120k–$220k/yr · Senior up to $400k+ total comp",
     experience: "4–8 years",
-    demand: "🏢 Enterprise-dominant, lower volume but very high pay",
-    platforms: ["LinkedIn","Toptal","Enterprise hiring"],
+    demand: "🏢 Enterprise-dominant · Low volume, very high pay",
     mustHave: [
       { skill: "Cloud architecture (AWS/GCP/Azure)", pct: 90 },
       { skill: "MLOps / LLMOps infrastructure", pct: 88 },
@@ -184,25 +478,24 @@ const roles = [
     ],
     niceHave: [
       { skill: "Cost optimization for GPU workloads", pct: 50 },
-      { skill: "Feature stores (Feast, Tecton)", pct: 40 },
       { skill: "Data governance & compliance", pct: 55 },
+      { skill: "Feature stores (Feast, Tecton)", pct: 40 },
       { skill: "Multi-tenant AI platform design", pct: 45 },
     ],
     tools: ["Kubernetes","Docker","Terraform","MLflow","Seldon","Prometheus","Grafana","AWS SageMaker","Vertex AI","Ray"],
     hotTags: ["LLMOps","Model serving","GPU cost optimization"],
     gaps: [
-      "This role requires deep DevOps foundations — a 3-month AI program alone is insufficient without prior infrastructure background.",
-      "AgentOps (monitoring agent systems in production) is a brand-new discipline with almost no formal training available.",
-      "Cost governance for LLM inference at scale is a specific skill employers struggle to hire for."
+      "Requires deep DevOps foundations — a 3-month AI program alone is insufficient without prior infrastructure background.",
+      "AgentOps (monitoring agent systems in production) is brand-new with almost no formal training available anywhere.",
+      "Cost governance for LLM inference at scale is a specific high-value skill employers struggle to hire for."
     ],
-    insight: "Best for candidates with existing DevOps/cloud experience looking to layer AI platform skills on top."
+    insight: "Best positioned for APF graduates who already have DevOps/cloud engineering experience — layering AI on top."
   },
   {
     title: "AI Developer",
     salary: "$55–$180/hr freelance · $100k–$200k/yr full-time",
     experience: "1–3 years",
-    demand: "💼 Highest volume of job postings across all platforms",
-    platforms: ["Upwork","Toptal","LinkedIn","Freelance"],
+    demand: "💼 Highest volume of postings across all platforms",
     mustHave: [
       { skill: "Python + AI API integration", pct: 95 },
       { skill: "Prompt engineering (chain-of-thought, few-shot)", pct: 85 },
@@ -220,11 +513,11 @@ const roles = [
     tools: ["OpenAI API","Claude API","LangChain","FastAPI","React","Supabase","PostgreSQL","Vercel","GitHub Copilot","Cursor"],
     hotTags: ["Full-stack AI apps","Generative AI","AI product building"],
     gaps: [
-      "Full-stack AI app delivery (design → build → deploy → maintain) is what clients want but few programs cover end-to-end.",
-      "AI product thinking — translating business problems into AI solutions — is valued over pure coding skills for this role.",
+      "Full-stack AI delivery (design → build → deploy → maintain) is what clients want but few programs cover end-to-end.",
+      "AI product thinking — translating business problems to AI solutions — valued over pure coding skill.",
       "Live deployed portfolio beats certifications at this entry level; programs don't emphasize shipping real apps."
     ],
-    insight: "Fastest path to paid freelance work — specialize in a niche (AI for e-commerce, AI for healthcare), build 3 live deployed demos."
+    insight: "Fastest path to paid work — specialize in a niche (AI for e-commerce, AI for healthcare), build 3 live deployed demos."
   }
 ];
 
@@ -238,7 +531,7 @@ function bars(arr, color) {
 }
 
 function showRole(idx, btn) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
   const r = roles[idx];
   document.getElementById('roleContent').innerHTML = `
@@ -270,14 +563,17 @@ function showRole(idx, btn) {
         <p class="insight-text">${r.insight}</p>
       </div>
     </div>
-    <div style="margin-bottom:1.25rem;">
-      <span style="font-size:11px;color:#888;">Top platforms: </span>
-      ${r.platforms.map(p => `<span class="platform-pill">${p}</span>`).join('')}
-    </div>
   `;
 }
 
-showRole(0, document.querySelector('.tab.active'));
+function showSection(name, btn) {
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
+  document.getElementById('section-' + name).classList.remove('hidden');
+}
+
+showRole(0, document.querySelector('.role-tab.active'));
 </script>
 </body>
 </html>
